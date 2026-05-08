@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Synapse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- AUTH SCREEN -->
+  <div class="screen" id="authScreen">
+    <div class="auth-atmosphere">
+      <div class="atm-orb atm-orb1"></div>
+      <div class="atm-orb atm-orb2"></div>
+      <div class="atm-orb atm-orb3"></div>
+      <div class="atm-particles" id="authParticles"></div>
+    </div>
+
+    <div class="auth-layout">
+      <div class="auth-left">
+        <div class="auth-logo">
+          <svg class="logo-hex" viewBox="0 0 60 60" fill="none">
+            <path d="M30 4L54 17.5V44.5L30 58L6 44.5V17.5L30 4Z" stroke="#5deb8a" stroke-width="1.5" fill="none"/>
+            <path d="M30 14L46 23.5V42.5L30 52L14 42.5V23.5L30 14Z" stroke="#5deb8a" stroke-width="0.5" fill="rgba(93,235,138,0.05)"/>
+            <circle cx="30" cy="30" r="4" fill="#5deb8a"/>
+          </svg>
+          <span class="logo-text">Synapse</span>
+        </div>
+
+        <div class="auth-hero">
+          <h1 class="auth-headline">
+            Biology that<br>
+            <em>grows</em> with<br>
+            you.
+          </h1>
+          <p class="auth-desc">A living curriculum that adapts to how you think, remembers what you know, and takes you deeper than any textbook ever could.</p>
+        </div>
+
+        <div class="auth-stats">
+          <div class="stat">
+            <div class="stat-val">37T</div>
+            <div class="stat-label">cells in your body</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-val">∞</div>
+            <div class="stat-label">questions to explore</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-val">1</div>
+            <div class="stat-label">tutor that never forgets</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-right">
+        <div class="auth-card">
+          <div class="auth-tab-bar">
+            <button class="auth-tab active" id="tabLogin" onclick="showTab('login')">Sign In</button>
+            <button class="auth-tab" id="tabSignup" onclick="showTab('signup')">Create Account</button>
+            <div class="tab-indicator" id="tabIndicator"></div>
+          </div>
+
+          <div id="loginPanel">
+            <div class="field-group">
+              <label class="field-label">Email</label>
+              <input class="field-input" type="email" id="loginEmail" placeholder="your@email.com" onkeydown="if(event.key==='Enter')login()"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Password</label>
+              <input class="field-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()"/>
+            </div>
+            <div class="field-error" id="loginError"></div>
+            <button class="auth-submit" id="loginBtn" onclick="login()">Sign In</button>
+          </div>
+
+          <div id="signupPanel" style="display:none">
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Your Name</label>
+                <input class="field-input" type="text" id="signupName" placeholder="What should we call you?"/>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Class</label>
+                <select class="field-input field-select" id="signupClass">
+                  <option value="">Select</option>
+                  <option value="6">Class 6</option>
+                  <option value="7">Class 7</option>
+                  <option value="8">Class 8</option>
+                  <option value="9">Class 9</option>
+                  <option value="10">Class 10</option>
+                  <option value="11">Class 11</option>
+                  <option value="12">Class 12</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Email</label>
+              <input class="field-input" type="email" id="signupEmail" placeholder="your@email.com"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Password</label>
+              <input class="field-input" type="password" id="signupPassword" placeholder="Min 6 characters"/>
+            </div>
+            <div class="field-error" id="signupError"></div>
+            <button class="auth-submit" id="signupBtn" onclick="signup()">Begin Your Journey</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRICULUM MAP -->
+  <div class="screen" id="mapScreen" style="display:none">
+    <div class="map-atmosphere">
+      <div class="map-fog"></div>
+      <div class="map-particles" id="mapParticles"></div>
+    </div>
+
+    <header class="map-header">
+      <div class="map-logo">
+        <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
+          <path d="M20 2L36 11.5V29.5L20 39L4 29.5V11.5L20 2Z" stroke="#5deb8a" stroke-width="1.5" fill="none"/>
+          <circle cx="20" cy="20" r="3" fill="#5deb8a"/>
+        </svg>
+        <span>Synapse</span>
+      </div>
+      <div class="map-student" id="mapStudent">
+        <div class="map-avi" id="mapAvi">?</div>
+        <div class="map-student-info">
+          <div class="map-student-name" id="mapStudentName">Loading...</div>
+          <div class="map-student-level" id="mapStudentLevel">—</div>
+        </div>
+        <button class="map-signout" onclick="signOut()">↩</button>
+      </div>
+    </header>
+
+    <div class="map-content">
+      <div class="map-title-area">
+        <div class="map-eyebrow">Your Learning Journey</div>
+        <h1 class="map-title" id="mapTitle">Cell Biology</h1>
+        <p class="map-subtitle" id="mapSubtitle">The foundation of all life</p>
+      </div>
+
+      <div class="tree-canvas" id="treeCanvas">
+        <canvas id="treeDrawing"></canvas>
+        <div class="tree-nodes" id="treeNodes"></div>
+      </div>
+
+      <div class="map-progress-bar">
+        <div class="map-progress-track">
+          <div class="map-progress-fill" id="mapProgressFill"></div>
+        </div>
+        <div class="map-progress-label" id="mapProgressLabel">0 of 6 lessons complete</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSON SCREEN -->
+  <div class="screen" id="lessonScreen" style="display:none">
+
+    <header class="lesson-header">
+      <button class="back-btn" onclick="showMap()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Map
+      </button>
+      <div class="lesson-header-title" id="lessonHeaderTitle">Cell Theory</div>
+      <div class="lesson-progress-dots" id="lessonDots"></div>
+    </header>
+
+    <div class="lesson-layout">
+
+      <!-- LEFT: VISUAL -->
+      <div class="lesson-visual-panel" id="lessonVisualPanel">
+        <div class="visual-container" id="visualContainer">
+          <!-- Injected by JS based on lesson -->
+        </div>
+        <div class="visual-caption" id="visualCaption"></div>
+      </div>
+
+      <!-- RIGHT: LEARNING -->
+      <div class="lesson-learning-panel">
+
+        <div class="lesson-info">
+          <div class="lesson-branch-tag" id="lessonBranchTag">Cell Biology</div>
+          <h2 class="lesson-title" id="lessonTitle">Cell Theory</h2>
+          <p class="lesson-subtitle-text" id="lessonSubtitle">The three laws that changed biology</p>
+        </div>
+
+        <div class="lesson-body" id="lessonBody">
+
+          <!-- NARRATION -->
+          <div class="narration-block" id="narrationBlock">
+            <div class="narration-text" id="narrationText"></div>
+            <div class="narration-cursor"></div>
+          </div>
+
+          <!-- INTERACTION -->
+          <div class="interaction-block" id="interactionBlock" style="display:none">
+            <div class="interaction-prompt" id="interactionPrompt"></div>
+            <div class="interaction-content" id="interactionContent"></div>
+            <button class="interaction-submit" id="interactionSubmit" onclick="submitInteraction()">Check →</button>
+          </div>
+
+          <!-- RESULT -->
+          <div class="result-block" id="resultBlock" style="display:none">
+            <div class="result-text" id="resultText"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextStep()">Continue →</button>
+          </div>
+
+        </div>
+
+        <!-- CHAT -->
+        <div class="lesson-chat">
+          <div class="chat-toggle" onclick="toggleChat()">
+            <span id="chatToggleText">Ask Synapse a question ↓</span>
+          </div>
+          <div class="chat-area" id="chatArea" style="display:none">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-row">
+              <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything about this topic..." onkeydown="if(event.key==='Enter')sendChat()"/>
+              <button class="chat-send" onclick="sendChat()">→</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="curriculum.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
