@@ -64,18 +64,6 @@ async function signup() {
     var uid = res.data.user.id;
     var levelMap = { 6:'Level 1', 7:'Level 1', 8:'Level 2', 9:'Level 2', 10:'Level 3', 11:'Level 4', 12:'Level 4' };
 
-    await sb.from('profiles').insert({
-      id: uid, name: name,
-      class: parseInt(cls),
-      level: levelMap[parseInt(cls)] || 'Level 2',
-      topics: []
-    });
-
-    await sb.from('student_memory').insert({
-      user_id: uid, summary: '',
-      open_threads: [], struggles: []
-    });
-
     await sb.auth.signInWithPassword({ email: email, password: pass });
 
   } catch(e) {
