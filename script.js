@@ -5,7 +5,7 @@
 
 // ── Config ──
 var SUPABASE_URL = 'https://gfbfifoxiebwonuasnwy.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_4oyc-yN8lxk5TXapGAA0Mg_oMRlVAF5';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmYmZpZm94aWVid29udWFzbnd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTc5NDEsImV4cCI6MjA5MzY3Mzk0MX0.XV2t660ttDPFW8UjnVULmPEjbm5FXt-nAagCtNsHJgk';
 var GROQ_KEY     = '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';
 var GROQ_URL     = 'https://api.groq.com/openai/v1/chat/completions';
 var MODEL        = 'llama-3.3-70b-versatile';
