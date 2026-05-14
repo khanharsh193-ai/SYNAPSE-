@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapse — NCERT Class 6 Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        dark: { 900: '#070908', 800: '#111513', 700: '#1C221F', 600: '#2A332E' },
+                        accent: { green: '#2ECA45', hover: '#3BE855', glow: 'rgba(46, 202, 69, 0.2)' }
+                    },
+                    boxShadow: { 'glow': '0 0 20px rgba(46, 202, 69, 0.15)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #070908; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2A332E; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f4d45; }
+
+        #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        #sidebar.collapsed { width: 72px; }
+        #sidebar.expanded { width: 288px; }
+        #sidebar.collapsed .sidebar-label,
+        #sidebar.collapsed .sidebar-section-title,
+        #sidebar.collapsed .sidebar-badge,
+        #sidebar.collapsed .sidebar-bottom-btn-text,
+        #sidebar.collapsed .sidebar-search,
+        #sidebar.collapsed .sidebar-brand-text { display: none; }
+        #sidebar.collapsed .sidebar-nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        #sidebar.collapsed .sidebar-subject-item { justify-content: center; }
+        #sidebar.collapsed .sidebar-brand { justify-content: center; padding: 24px 0; }
+        #sidebar.collapsed .sidebar-bottom { padding: 16px 12px; }
+        #sidebar.collapsed .sidebar-bottom-btn { justify-content: center; }
+
+        #sidebarToggle { position: absolute; right: -12px; top: 28px; width: 24px; height: 24px; background: #1C221F; border: 1px solid #2A332E; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: all 0.2s; color: #6b7c72; }
+        #sidebarToggle:hover { background: #2A332E; color: #fff; }
+        #sidebarToggle iconify-icon { transition: transform 0.3s; font-size: 12px; }
+        #sidebar.collapsed #sidebarToggle iconify-icon { transform: rotate(180deg); }
+
+        #sidebar.collapsed [data-tooltip] { position: relative; }
+        #sidebar.collapsed [data-tooltip]:hover::after {
+            content: attr(data-tooltip); position: absolute; left: calc(100% + 12px); top: 50%;
+            transform: translateY(-50%); background: #1C221F; border: 1px solid #2A332E;
+            color: #fff; font-size: 12px; font-weight: 500; padding: 5px 10px;
+            border-radius: 6px; white-space: nowrap; z-index: 100; pointer-events: none;
+        }
+
+        /* Chat Messages */
+        .message { display: flex; gap: 16px; margin-bottom: 24px; max-width: 900px; margin-left: auto; margin-right: auto; width: 100%; animation: fadeIn 0.3s ease; }
+        .message.user { flex-direction: row-reverse; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .avatar { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; border: 1px solid #2A332E; }
+        .message.ai .avatar { background: #1C221F; color: #2ECA45; font-size: 20px; box-shadow: 0 0 15px rgba(46, 202, 69, 0.1); }
+        .message.user .avatar { background: #2ECA45; color: #070908; }
+        .bubble { padding: 18px 24px; border-radius: 16px; font-size: 15px; line-height: 1.7; width: 100%; border: 1px solid #2A332E; }
+        .message.ai .bubble { background: #111513; color: #e5e7eb; border-top-left-radius: 4px; }
+        .message.user .bubble { background: #1C221F; color: #ffffff; border-top-right-radius: 4px; }
+        .bubble p { margin-bottom: 12px; margin-top: 0; }
+        .bubble p:last-child { margin-bottom: 0; }
+        .bubble strong { color: #2ECA45; }
+        .bubble ul, .bubble ol { margin: 12px 0; padding-left: 20px; }
+        .bubble li { margin-bottom: 6px; }
+        .bubble code { background: #2A332E; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+
+        /* Typing indicator */
+        .typing-dot { width: 8px; height: 8px; background: #2ECA45; border-radius: 50%; display: inline-block; animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        /* Chapter cards */
+        .chapter-card { transition: all 0.2s; cursor: pointer; }
+        .chapter-card:hover { border-color: #2ECA45; transform: translateY(-2px); }
+        .chapter-card.active { border-color: #2ECA45; background: rgba(46, 202, 69, 0.05); }
+
+        /* Subject tabs */
+        .subject-tab { transition: all 0.2s; cursor: pointer; }
+        .subject-tab:hover { background: #1C221F; }
+        .subject-tab.active { background: rgba(46, 202, 69, 0.1); border-color: #2ECA45; color: #2ECA45; }
+
+        /* Hide/show sections */
+        .section-hidden { display: none !important; }
+
+        /* Input focus */
+        #userInput:focus { box-shadow: 0 0 0 2px rgba(46, 202, 69, 0.2); }
+
+        /* Send button loading */
+        .send-loading { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Typewriter cursor */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: #2ECA45;
+            margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Ensure chat messages area scrolls properly */
+        #messagesArea {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen w-full flex overflow-hidden relative" style="height:100vh;">
+
+        <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-accent-glow rounded-full blur-[150px] pointer-events-none z-0"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent-glow rounded-full blur-[120px] pointer-events-none z-0 opacity-50"></div>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="expanded bg-dark-800/80 backdrop-blur-xl border-r border-dark-600 flex flex-col h-full z-10 relative flex-shrink-0">
+            <button id="sidebarToggle" onclick="toggleSidebar()">
+                <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            </button>
+
+            <div class="sidebar-brand p-6 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-dark-700 border border-dark-600 flex items-center justify-center text-accent-green shadow-glow flex-shrink-0">
+                    <iconify-icon icon="lucide:brain" class="text-2xl"></iconify-icon>
+                </div>
+                <div class="sidebar-brand-text">
+                    <h1 class="text-xl font-bold tracking-tight">Syn<span class="text-accent-green">apse</span></h1>
+                    <p class="text-xs text-gray-400 font-medium">NCERT Class 6 Tutor</p>
+                </div>
+            </div>
+
+            <div class="sidebar-search px-4 mb-6">
+                <div class="relative">
+                    <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></iconify-icon>
+                    <input type="text" id="sidebarSearch" placeholder="Search chapters..." class="w-full bg-dark-700 border border-dark-600 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-accent-green transition-all placeholder-gray-500">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-4 pb-24 space-y-6">
+
+                <div>
+                    <h2 class="sidebar-section-title text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Menu</h2>
+                    <nav class="space-y-1">
+                        <a href="#" onclick="showDashboard()" data-tooltip="Dashboard" class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg bg-dark-600 text-white group">
+                            <iconify-icon icon="lucide:layout-dashboard" class="text-accent-green flex-shrink-0 text-lg"></iconify-icon>
+                            <span class="sidebar-label text-sm font-medium">Dashboard</span>
+                        </a>
+                        <a href="subjects.html" data-tooltip="My Subjects" class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-dark-700 hover:text-white transition-colors group">
+                            <iconify-icon icon="lucide:book-open" class="group-hover:text-accent-green transition-colors flex-shrink-0 text-lg"></iconify-icon>
+                            <span class="sidebar-label text-sm font-medium">My Subjects</span>
+                        </a>
+                        <a href="#" onclick="showChat()" data-tooltip="AI Tutor" class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-dark-700 hover:text-white transition-colors group">
+                            <iconify-icon icon="lucide:message-circle" class="group-hover:text-accent-green transition-colors flex-shrink-0 text-lg"></iconify-icon>
+                            <span class="sidebar-label text-sm font-medium">AI Tutor</span>
+                            <span class="sidebar-badge ml-auto bg-accent-green text-dark-900 text-[10px] font-bold px-2 py-0.5 rounded-full">NEW</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <h2 class="sidebar-section-title text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Subjects</h2>
+                    <div id="subjectList" class="space-y-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="sidebar-section-title text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Recent Chats</h2>
+                    <div id="recentChatsList" class="space-y-1">
+                        <div class="text-gray-500 text-sm px-3 py-2">No chats yet</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sidebar-bottom absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-dark-800 via-dark-800 to-transparent">
+                <button onclick="newChat()" class="sidebar-bottom-btn w-full flex items-center justify-center gap-2 bg-accent-green hover:bg-accent-hover text-dark-900 font-bold py-3 px-4 rounded-xl shadow-glow transition-all active:scale-95">
+                    <iconify-icon icon="lucide:sparkles" class="text-lg flex-shrink-0"></iconify-icon>
+                    <span class="sidebar-bottom-btn-text sidebar-label">New Chat</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
+
+            <header class="h-20 flex items-center justify-between px-8 bg-dark-900/50 backdrop-blur-sm border-b border-dark-600/50 sticky top-0 z-20 flex-shrink-0">
+                <div class="flex flex-col">
+                    <h2 class="text-xl font-bold" id="greetingText">Good morning, Student! 👋</h2>
+                    <p class="text-sm text-gray-400" id="subGreeting">Ready to learn something new today?</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 bg-dark-700/50 border border-dark-600 px-3 py-1.5 rounded-full">
+                        <iconify-icon icon="lucide:flame" class="text-orange-500 text-lg"></iconify-icon>
+                        <span class="text-sm font-bold" id="streakCount">0 Day Streak</span>
+                    </div>
+                    <div class="flex items-center gap-3 pl-4 border-l border-dark-600">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-semibold">Class 6</p>
+                            <p class="text-xs text-accent-green">NCERT Curriculum</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border-2 border-dark-600 bg-dark-700 flex items-center justify-center text-accent-green font-bold">6</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- DASHBOARD VIEW -->
+            <div id="dashboardView" class="flex-1 overflow-y-auto p-8">
+                <div class="max-w-6xl mx-auto space-y-8">
+
+                    <!-- Welcome Hero -->
+                    <section class="bg-dark-800 border border-dark-600 rounded-2xl p-8 relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center space-y-6 max-w-2xl mx-auto">
+                            <div class="w-16 h-16 bg-dark-700 border border-dark-600 rounded-2xl flex items-center justify-center text-accent-green shadow-glow mb-2">
+                                <iconify-icon icon="lucide:brain" class="text-4xl"></iconify-icon>
+                            </div>
+                            <h2 class="text-3xl font-bold tracking-tight">What do you want to learn today?</h2>
+                            <p class="text-gray-400">Pick a subject below or ask me anything about your NCERT Class 6 syllabus.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-4">
+                                <button onclick="selectSubject('mathematics')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-dark-700/50 border border-dark-600 hover:border-accent-green hover:bg-dark-700 transition-all text-sm text-gray-300 hover:text-white group">
+                                    <iconify-icon icon="lucide:calculator" class="text-3xl text-accent-green group-hover:scale-110 transition-transform"></iconify-icon>
+                                    <span class="font-semibold text-base">Mathematics</span>
+                                    <span class="text-xs text-gray-500">14 Chapters</span>
+                                </button>
+                                <button onclick="selectSubject('science')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-dark-700/50 border border-dark-600 hover:border-accent-green hover:bg-dark-700 transition-all text-sm text-gray-300 hover:text-white group">
+                                    <iconify-icon icon="lucide:flask-conical" class="text-3xl text-blue-400 group-hover:scale-110 transition-transform"></iconify-icon>
+                                    <span class="font-semibold text-base">Science</span>
+                                    <span class="text-xs text-gray-500">16 Chapters</span>
+                                </button>
+                                <button onclick="selectSubject('social')" class="flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-dark-700/50 border border-dark-600 hover:border-accent-green hover:bg-dark-700 transition-all text-sm text-gray-300 hover:text-white group">
+                                    <iconify-icon icon="lucide:globe" class="text-3xl text-yellow-400 group-hover:scale-110 transition-transform"></iconify-icon>
+                                    <span class="font-semibold text-base">Social Science</span>
+                                    <span class="text-xs text-gray-500">3 Books</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Start -->
+                    <section>
+                        <h3 class="text-lg font-bold mb-4">Quick Start — Ask me anything</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button onclick="quickAsk('What are natural numbers?')" class="p-4 rounded-xl bg-dark-800 border border-dark-600 hover:border-accent-green transition-all text-left group">
+                                <iconify-icon icon="lucide:hash" class="text-accent-green text-xl mb-2 group-hover:scale-110 transition-transform"></iconify-icon>
+                                <p class="text-sm font-medium">What are natural numbers?</p>
+                            </button>
+                            <button onclick="quickAsk('Explain photosynthesis simply')" class="p-4 rounded-xl bg-dark-800 border border-dark-600 hover:border-accent-green transition-all text-left group">
+                                <iconify-icon icon="lucide:sun" class="text-yellow-400 text-xl mb-2 group-hover:scale-110 transition-transform"></iconify-icon>
+                                <p class="text-sm font-medium">Explain photosynthesis simply</p>
+                            </button>
+                            <button onclick="quickAsk('What is the solar system?')" class="p-4 rounded-xl bg-dark-800 border border-dark-600 hover:border-accent-green transition-all text-left group">
+                                <iconify-icon icon="lucide:orbit" class="text-blue-400 text-xl mb-2 group-hover:scale-110 transition-transform"></iconify-icon>
+                                <p class="text-sm font-medium">What is the solar system?</p>
+                            </button>
+                            <button onclick="quickAsk('Help me with fractions')" class="p-4 rounded-xl bg-dark-800 border border-dark-600 hover:border-accent-green transition-all text-left group">
+                                <iconify-icon icon="lucide:divide" class="text-purple-400 text-xl mb-2 group-hover:scale-110 transition-transform"></iconify-icon>
+                                <p class="text-sm font-medium">Help me with fractions</p>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Progress Overview -->
+                    <section>
+                        <h3 class="text-lg font-bold mb-4">Your Progress</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-gray-400 text-sm">Mathematics</span>
+                                    <span class="text-accent-green font-bold">0/14</span>
+                                </div>
+                                <div class="w-full bg-dark-700 rounded-full h-2">
+                                    <div class="bg-accent-green h-2 rounded-full transition-all" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-gray-400 text-sm">Science</span>
+                                    <span class="text-blue-400 font-bold">0/16</span>
+                                </div>
+                                <div class="w-full bg-dark-700 rounded-full h-2">
+                                    <div class="bg-blue-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-gray-400 text-sm">Social Science</span>
+                                    <span class="text-yellow-400 font-bold">0/29</span>
+                                </div>
+                                <div class="w-full bg-dark-700 rounded-full h-2">
+                                    <div class="bg-yellow-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- CHAPTERS VIEW -->
+            <div id="chaptersView" class="flex-1 overflow-y-auto p-8 section-hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex items-center gap-4 mb-6">
+                        <button onclick="showDashboard()" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors">
+                            <iconify-icon icon="lucide:arrow-left" class="text-gray-400"></iconify-icon>
+                        </button>
+                        <h2 class="text-2xl font-bold" id="chaptersTitle">Chapters</h2>
+                    </div>
+
+                    <!-- Subject Tabs -->
+                    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                        <button onclick="filterChapters('all')" class="subject-tab active px-4 py-2 rounded-lg border border-dark-600 text-sm font-medium whitespace-nowrap">All Subjects</button>
+                        <button onclick="filterChapters('mathematics')" class="subject-tab px-4 py-2 rounded-lg border border-dark-600 text-sm font-medium text-gray-400 whitespace-nowrap">Mathematics</button>
+                        <button onclick="filterChapters('science')" class="subject-tab px-4 py-2 rounded-lg border border-dark-600 text-sm font-medium text-gray-400 whitespace-nowrap">Science</button>
+                        <button onclick="filterChapters('social')" class="subject-tab px-4 py-2 rounded-lg border border-dark-600 text-sm font-medium text-gray-400 whitespace-nowrap">Social Science</button>
+                    </div>
+
+                    <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT VIEW -->
+            <div id="chatView" class="flex-1 flex flex-col h-full section-hidden">
+
+                <!-- Chat Header -->
+                <div class="h-14 flex items-center justify-between px-6 bg-dark-800/50 border-b border-dark-600/50 flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-dark-700 border border-dark-600 flex items-center justify-center text-accent-green">
+                            <iconify-icon icon="lucide:brain" class="text-lg"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold">Synapse AI Tutor</p>
+                            <p class="text-xs text-gray-500">NCERT Class 6 Expert</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500" id="currentTopic">General</span>
+                        <button onclick="newChat()" class="p-2 rounded-lg hover:bg-dark-700 transition-colors" title="New Chat">
+                            <iconify-icon icon="lucide:plus" class="text-gray-400"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div id="messagesArea" class="flex-1 overflow-y-auto p-6">
+                    <div class="max-w-3xl mx-auto">
+                        <!-- Welcome message -->
+                        <div class="message ai" id="welcomeMessage">
+                            <div class="avatar">
+                                <iconify-icon icon="lucide:brain"></iconify-icon>
+                            </div>
+                            <div class="bubble">
+                                <p><strong>Hello! I'm Synapse,</strong> your AI tutor for NCERT Class 6. 📚</p>
+                                <p>I can help you with:</p>
+                                <ul>
+                                    <li>Explaining concepts from your textbooks</li>
+                                    <li>Solving math problems step-by-step</li>
+                                    <li>Answering science questions</li>
+                                    <li>Helping with social science topics</li>
+                                </ul>
+                                <p>What would you like to learn today? You can also pick a specific chapter from the sidebar!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-4 bg-dark-800/50 border-t border-dark-600/50 flex-shrink-0">
+                    <div class="max-w-3xl mx-auto relative">
+                        <input type="text" id="chatInput" onkeypress="handleChatKey(event)" placeholder="Ask me anything about Class 6..." class="w-full bg-dark-900 border border-dark-600 rounded-xl py-4 pl-14 pr-16 text-base focus:outline-none focus:border-accent-green transition-all placeholder-gray-500 shadow-inner">
+                        <iconify-icon icon="lucide:sparkles" class="absolute left-5 top-1/2 -translate-y-1/2 text-accent-green text-xl"></iconify-icon>
+                        <button id="chatSendBtn" onclick="sendChatMessage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-accent-green hover:bg-accent-hover text-dark-900 rounded-lg flex items-center justify-center transition-colors">
+                            <iconify-icon icon="lucide:arrow-right" class="text-xl font-bold"></iconify-icon>
+                        </button>
+                    </div>
+                    <p class="text-center text-xs text-gray-600 mt-2">Synapse may make mistakes. Always verify important facts with your textbook.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            sidebar.classList.toggle('expanded');
+        }
+        function setGreeting() {
+            var hour = new Date().getHours();
+            var greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+            var el = document.getElementById('greetingText');
+            if (el) el.textContent = greeting + ', Student! 👋';
+        }
+        setGreeting();
+
+        // Handle URL parameters from subjects page
+        function handleUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const subject = params.get('subject');
+            const chapter = params.get('chapter');
+            const title = params.get('title');
+
+            if (subject && chapter && title) {
+                const decodedTitle = decodeURIComponent(title);
+
+                // Auto-show chat with chapter context
+                setTimeout(() => {
+                    showChat();
+
+                    // Set context for the AI
+                    if (typeof currentSubject !== 'undefined') {
+                        currentSubject = subject;
+                        currentChapter = { num: chapter, title: decodedTitle };
+                    }
+
+                    // Clear and set up the chat for this chapter
+                    const messagesArea = document.getElementById('messagesArea');
+                    const container = messagesArea.querySelector('.max-w-3xl');
+
+                    // The AI starts teaching immediately — no "what do you want to learn?"
+                    container.innerHTML = `
+                        <div class="message ai">
+                            <div class="avatar"><iconify-icon icon="lucide:brain"></iconify-icon></div>
+                            <div class="bubble">
+                                <p><strong>Let's dive into ${decodedTitle}!</strong> 📖</p>
+                                <p>I'm starting you off with the first key concept of this chapter. Ready?</p>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('currentTopic').textContent = 
+                        subject.charAt(0).toUpperCase() + subject.slice(1) + ' — Ch. ' + chapter;
+
+                    // Auto-trigger the AI to start teaching this chapter
+                    setTimeout(() => {
+                        autoStartTeaching(subject, chapter, decodedTitle);
+                    }, 800);
+
+                }, 500);
+            }
+        }
+
+        // Auto-start teaching when coming from subjects page
+        async function autoStartTeaching(subject, chapterNum, chapterTitle) {
+            // Wait for script.js to fully load
+            let attempts = 0;
+            const maxAttempts = 20;
+
+            const trySend = async () => {
+                attempts++;
+                const chatInput = document.getElementById('chatInput');
+                const sendBtn = document.getElementById('chatSendBtn');
+
+                if (chatInput && sendBtn && typeof sendChatMessage === 'function') {
+                    // Set the system instruction
+                    const systemMsg = `[SYSTEM: Student has opened Chapter ${chapterNum}: "${chapterTitle}" from ${subject}. Start teaching this chapter immediately using the 7-step teaching structure. Begin with The Hook — something the student has already experienced. Do NOT ask what they want to learn. Start teaching NOW.]`;
+
+                    chatInput.value = systemMsg;
+
+                    // Small delay to ensure UI is ready
+                    setTimeout(async () => {
+                        await sendChatMessage();
+                    }, 300);
+                } else if (attempts < maxAttempts) {
+                    setTimeout(trySend, 200);
+                }
+            };
+
+            setTimeout(trySend, 500);
+        }
+
+        // Also handle "chat" parameter from recent chats
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('subject') || params.get('chat')) {
+            handleUrlParams();
+        }
+    </script>
+</body>
+</html>
