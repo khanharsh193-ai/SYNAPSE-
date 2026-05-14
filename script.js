@@ -5,7 +5,7 @@
 
 // ── CONFIGURATION ──
 // Get your free API key from: https://console.groq.com/keys
-const GROQ_API_KEY = 'YOUR_GROQ_API_KEY_HERE';
+const GROQ_API_KEY = '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';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile'; // Fast & good quality
 // Alternative: 'llama-3.1-8b-instant' (higher daily limits)
